@@ -1,9 +1,21 @@
 # smart-greenhouse
 
 As part of my Mechatronics Project I will be creating a Smart Automated Greenhouse.  
-Central to my design will be the [Ikea Akerbaer](https://www.ikea.com/ie/en/p/akerbaer-greenhouse-in-outdoor-white-30537170).  
+As part of this project there will be a number of systems:  
 
-![Ikea Akerbaer](./pictures/ikea/akerbaer-greenhouse-in-outdoor-white__1176982_pe895190_s5.jpg)
+* Watering system
+  * 5v pump with relay control
+  * Water level sensor
+  * Reservoir
+  * Shower head
+  * Soil moisture sensor
+* Lighting System
+  * 12V Grow LED Strip with relay
+* Air Quality System
+  * 5V Fan with relay
+  * VOC, Temperature, Humidity Sensors
+* User Interface
+  * Touch screen
 
 ## Parts
 
