@@ -1,6 +1,5 @@
 /*  Automated Indoor Greenhouse Control System UI
     ESP32-2432S028R (Cheap Yellow Display)
-    240x320 rotated 270° → logical 320x240
 */
 
 #include <lvgl.h>
@@ -20,7 +19,6 @@ XPT2046_Touchscreen touchscreen(XPT2046_CS, XPT2046_IRQ);
 /* ---------------- DISPLAY ---------------- */
 #define DISP_W 320
 #define DISP_H 240
-
 #define DRAW_BUF_SIZE (DISP_W * DISP_H / 10 * (LV_COLOR_DEPTH / 8))
 uint32_t draw_buf[DRAW_BUF_SIZE / 4];
 
@@ -29,29 +27,10 @@ bool watering_active = false;
 bool lighting_active = false;
 bool air_active      = false;
 
-/* ---------------- SENSOR MOCK ---------------- */
-float temperature = 24.5;
-float humidity = 65;
-int voc = 125;
-int soil = 45;
-int water = 75;
-
 /* ---------------- UI ---------------- */
 lv_obj_t *tabview;
-
-lv_obj_t *temp_lbl;
-lv_obj_t *hum_lbl;
-lv_obj_t *voc_lbl;
-lv_obj_t *soil_lbl;
-lv_obj_t *water_lbl;
-
-lv_obj_t *water_btn;
-lv_obj_t *light_btn;
-lv_obj_t *air_btn;
-
-lv_obj_t *water_led;
-lv_obj_t *light_led;
-lv_obj_t *air_led;
+lv_obj_t *water_btn, *light_btn, *air_btn;
+lv_obj_t *water_led, *light_led, *air_led;
 
 /* ---------------- TOUCH READ ---------------- */
 void touchscreen_read(lv_indev_t * indev, lv_indev_data_t * data) {
@@ -95,46 +74,41 @@ static void air_cb(lv_event_t * e) {
 }
 
 /* ---------------- DASHBOARD ---------------- */
-void dashboard_row(lv_obj_t *parent, int y, lv_color_t c,
-                   const char *txt, lv_obj_t **lbl) {
-
+void dashboard_row(lv_obj_t *parent, int y, lv_color_t c, const char *txt) {
   lv_obj_t *box = lv_obj_create(parent);
-  lv_obj_set_width(box, lv_pct(100));      // FIXED WIDTH
+  lv_obj_set_width(box, lv_pct(100));
   lv_obj_set_height(box, 32);
   lv_obj_set_pos(box, 0, y);
   lv_obj_set_style_bg_color(box, c, 0);
   lv_obj_set_style_pad_all(box, 4, 0);
+  lv_obj_remove_flag(box, LV_OBJ_FLAG_SCROLLABLE);
+  lv_obj_clear_flag(box, LV_OBJ_FLAG_GESTURE_BUBBLE);
 
-  *lbl = lv_label_create(box);
-  lv_label_set_text(*lbl, txt);
-  lv_obj_align(*lbl, LV_ALIGN_LEFT_MID, 6, 0);
+  lv_obj_t *lbl = lv_label_create(box);
+  lv_label_set_text(lbl, txt);
+  lv_obj_align(lbl, LV_ALIGN_LEFT_MID, 6, 0);
 }
 
 void create_dashboard(lv_obj_t *parent) {
-  int y = 8;
-
-  dashboard_row(parent, y, lv_color_hex(0xFF6B35),
-                "Temp: 24.5 C", &temp_lbl); y += 36;
-  dashboard_row(parent, y, lv_color_hex(0x4D96FF),
-                "Humidity: 65 %", &hum_lbl); y += 36;
-  dashboard_row(parent, y, lv_color_hex(0x9B59B6),
-                "VOC: 125 ppb", &voc_lbl); y += 36;
-  dashboard_row(parent, y, lv_color_hex(0x8D6E63),
-                "Soil: 45 %", &soil_lbl); y += 36;
-  dashboard_row(parent, y, lv_color_hex(0x1E88E5),
-                "Water: 75 %", &water_lbl);
+  dashboard_row(parent, 8,  lv_color_hex(0xFF6B35), "Temp: 24.5 C");
+  dashboard_row(parent, 44, lv_color_hex(0x4D96FF), "Humidity: 65 %");
+  dashboard_row(parent, 80, lv_color_hex(0x9B59B6), "VOC: 125 ppb");
+  dashboard_row(parent, 116,lv_color_hex(0x8D6E63), "Soil: 45 %");
+  dashboard_row(parent, 152,lv_color_hex(0x1E88E5), "Water: 75 %");
 }
 
-/* ---------------- ONE-LINE CONTROL ---------------- */
+/* ---------------- CONTROL ROW ---------------- */
 void control_row(lv_obj_t *parent, int y, const char *name,
                  lv_event_cb_t cb,
                  lv_obj_t **btn, lv_obj_t **led) {
 
   lv_obj_t *row = lv_obj_create(parent);
-  lv_obj_set_width(row, lv_pct(100));       // FIXED WIDTH
+  lv_obj_set_width(row, lv_pct(100));
   lv_obj_set_height(row, 36);
   lv_obj_set_pos(row, 0, y);
   lv_obj_set_style_pad_all(row, 4, 0);
+  lv_obj_remove_flag(row, LV_OBJ_FLAG_SCROLLABLE);
+  lv_obj_clear_flag(row, LV_OBJ_FLAG_GESTURE_BUBBLE);
 
   lv_obj_t *lbl = lv_label_create(row);
   lv_label_set_text(lbl, name);
@@ -144,6 +118,7 @@ void control_row(lv_obj_t *parent, int y, const char *name,
   lv_obj_set_size(*btn, 60, 26);
   lv_obj_align(*btn, LV_ALIGN_RIGHT_MID, -30, 0);
   lv_obj_add_event_cb(*btn, cb, LV_EVENT_CLICKED, NULL);
+  lv_obj_clear_flag(*btn, LV_OBJ_FLAG_GESTURE_BUBBLE);
 
   lv_obj_t *btxt = lv_label_create(*btn);
   lv_label_set_text(btxt, "OFF");
@@ -172,20 +147,17 @@ void create_gui() {
   lv_obj_set_size(tabview, DISP_W, DISP_H);
   lv_tabview_set_tab_bar_size(tabview, 26);
 
-  /* 🔧 FIX: Make tab bar clickable */
-  lv_obj_t *tab_bar = lv_tabview_get_tab_bar(tabview);
-  lv_obj_remove_flag(tab_bar, LV_OBJ_FLAG_SCROLLABLE);
-  lv_obj_clear_flag(tab_bar, LV_OBJ_FLAG_GESTURE_BUBBLE);
-
   lv_obj_t *dash = lv_tabview_add_tab(tabview, "Dashboard");
   lv_obj_t *ctrl = lv_tabview_add_tab(tabview, "Controls");
 
-  lv_obj_remove_flag(dash, LV_OBJ_FLAG_SCROLLABLE);
-  lv_obj_remove_flag(ctrl, LV_OBJ_FLAG_SCROLLABLE);
+  /* push content below tab bar */
+  lv_obj_set_style_pad_top(dash, 8, 0);
+  lv_obj_set_style_pad_top(ctrl, 8, 0);
 
   create_dashboard(dash);
   create_controls(ctrl);
 }
+
 
 /* ---------------- SETUP ---------------- */
 void setup() {
