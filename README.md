@@ -17,6 +17,18 @@ As part of this project there will be a number of systems:
 * User Interface
   * Touch screen
 
+## Programming
+
+### CYD ESP32-2432S028
+
+To program the CYD ESP32-2432S028 we will be using Arduino C/C++.  
+To upload code to the device we use the Arduino IDE and upload at a baud rate of 115200 via the Micro USB connector.  
+
+### Raspberry Pi Pico
+
+To program the Raspberry Pi Pico we will be using MicroPython.  
+To upload code to the device we use the Thonny IDE and upload via the Micro USB connector.  
+
 ## Parts
 
 ### Electronics
@@ -56,3 +68,5 @@ Ikea Akerbaer Greenhouse:
 ![Ikea Akerbaer Dimensions](./pictures/ikea/akerbaer-greenhouse-in-outdoor-white__1357160_pe953473_s5.jpg)
 
 [3D Model](./3d-models/akerbar-white-30537170.fbx)
+
+
