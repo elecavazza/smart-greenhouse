@@ -23,6 +23,13 @@ As part of this project there will be a number of systems:
 
 To program the CYD ESP32-2432S028 we will be using Arduino C/C++.  
 To upload code to the device we use the Arduino IDE and upload at a baud rate of 115200 via the Micro USB connector.  
+The target board used is the `ESP32 Dev Module` and the external dependencies are:  
+
+```c
+#include <lvgl.h>
+#include <TFT_eSPI.h>
+#include <XPT2046_Touchscreen.h>
+```
 
 ### Raspberry Pi Pico
 
