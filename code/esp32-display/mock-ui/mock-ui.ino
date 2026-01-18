@@ -76,21 +76,21 @@ void set_led(lv_obj_t *led, bool on) {
 static void water_cb(lv_event_t * e) {
   watering_active = !watering_active;
   set_led(water_led, watering_active);
-  lv_label_set_text(lv_obj_get_child(water_btn,0),
+  lv_label_set_text(lv_obj_get_child(water_btn, 0),
                     watering_active ? "ON" : "OFF");
 }
 
 static void light_cb(lv_event_t * e) {
   lighting_active = !lighting_active;
   set_led(light_led, lighting_active);
-  lv_label_set_text(lv_obj_get_child(light_btn,0),
+  lv_label_set_text(lv_obj_get_child(light_btn, 0),
                     lighting_active ? "ON" : "OFF");
 }
 
 static void air_cb(lv_event_t * e) {
   air_active = !air_active;
   set_led(air_led, air_active);
-  lv_label_set_text(lv_obj_get_child(air_btn,0),
+  lv_label_set_text(lv_obj_get_child(air_btn, 0),
                     air_active ? "ON" : "OFF");
 }
 
@@ -99,8 +99,9 @@ void dashboard_row(lv_obj_t *parent, int y, lv_color_t c,
                    const char *txt, lv_obj_t **lbl) {
 
   lv_obj_t *box = lv_obj_create(parent);
-  lv_obj_set_size(box, DISP_W - 10, 32);
-  lv_obj_set_pos(box, 5, y);
+  lv_obj_set_width(box, lv_pct(100));      // FIXED WIDTH
+  lv_obj_set_height(box, 32);
+  lv_obj_set_pos(box, 0, y);
   lv_obj_set_style_bg_color(box, c, 0);
   lv_obj_set_style_pad_all(box, 4, 0);
 
@@ -113,13 +114,13 @@ void create_dashboard(lv_obj_t *parent) {
   int y = 8;
 
   dashboard_row(parent, y, lv_color_hex(0xFF6B35),
-                "Temp: 24.5 C", &temp_lbl); y+=36;
+                "Temp: 24.5 C", &temp_lbl); y += 36;
   dashboard_row(parent, y, lv_color_hex(0x4D96FF),
-                "Humidity: 65 %", &hum_lbl); y+=36;
+                "Humidity: 65 %", &hum_lbl); y += 36;
   dashboard_row(parent, y, lv_color_hex(0x9B59B6),
-                "VOC: 125 ppb", &voc_lbl); y+=36;
+                "VOC: 125 ppb", &voc_lbl); y += 36;
   dashboard_row(parent, y, lv_color_hex(0x8D6E63),
-                "Soil: 45 %", &soil_lbl); y+=36;
+                "Soil: 45 %", &soil_lbl); y += 36;
   dashboard_row(parent, y, lv_color_hex(0x1E88E5),
                 "Water: 75 %", &water_lbl);
 }
@@ -130,8 +131,9 @@ void control_row(lv_obj_t *parent, int y, const char *name,
                  lv_obj_t **btn, lv_obj_t **led) {
 
   lv_obj_t *row = lv_obj_create(parent);
-  lv_obj_set_size(row, DISP_W - 10, 36);
-  lv_obj_set_pos(row, 5, y);
+  lv_obj_set_width(row, lv_pct(100));       // FIXED WIDTH
+  lv_obj_set_height(row, 36);
+  lv_obj_set_pos(row, 0, y);
   lv_obj_set_style_pad_all(row, 4, 0);
 
   lv_obj_t *lbl = lv_label_create(row);
@@ -169,6 +171,11 @@ void create_gui() {
   tabview = lv_tabview_create(lv_screen_active());
   lv_obj_set_size(tabview, DISP_W, DISP_H);
   lv_tabview_set_tab_bar_size(tabview, 26);
+
+  /* 🔧 FIX: Make tab bar clickable */
+  lv_obj_t *tab_bar = lv_tabview_get_tab_bar(tabview);
+  lv_obj_remove_flag(tab_bar, LV_OBJ_FLAG_SCROLLABLE);
+  lv_obj_clear_flag(tab_bar, LV_OBJ_FLAG_GESTURE_BUBBLE);
 
   lv_obj_t *dash = lv_tabview_add_tab(tabview, "Dashboard");
   lv_obj_t *ctrl = lv_tabview_add_tab(tabview, "Controls");
