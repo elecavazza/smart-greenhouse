@@ -18,6 +18,9 @@ XPT2046_Touchscreen touchscreen(XPT2046_CS, XPT2046_IRQ);
 
 #define SCREEN_WIDTH 240
 #define SCREEN_HEIGHT 320
+// After 270° rotation, logical dimensions are swapped
+#define ROTATED_WIDTH 320
+#define ROTATED_HEIGHT 240
 
 #define DRAW_BUF_SIZE (SCREEN_WIDTH * SCREEN_HEIGHT / 10 * (LV_COLOR_DEPTH / 8))
 uint32_t draw_buf[DRAW_BUF_SIZE / 4];
@@ -179,7 +182,8 @@ void create_controls(lv_obj_t *parent) {
 /* ---------------- GUI ---------------- */
 void create_gui() {
   tabview = lv_tabview_create(lv_screen_active());
-  lv_obj_set_size(tabview, SCREEN_WIDTH, SCREEN_HEIGHT);
+  // Use rotated dimensions for the tabview
+  lv_obj_set_size(tabview, ROTATED_WIDTH, ROTATED_HEIGHT);
   lv_tabview_set_tab_bar_size(tabview, 26);
 
   lv_obj_t *dash = lv_tabview_add_tab(tabview, "Dashboard");
