@@ -5,22 +5,21 @@
 #include <lvgl.h>
 #include <TFT_eSPI.h>
 #include <XPT2046_Touchscreen.h>
-#include <Preferences.h>
 
-/* ---------------- TOUCH ---------------- */
-#define XPT2046_IRQ 36
-#define XPT2046_MOSI 32
-#define XPT2046_MISO 39
-#define XPT2046_CLK 25
-#define XPT2046_CS 33
+// Touchscreen pins
+#define XPT2046_IRQ 36   // T_IRQ
+#define XPT2046_MOSI 32  // T_DIN
+#define XPT2046_MISO 39  // T_OUT
+#define XPT2046_CLK 25   // T_CLK
+#define XPT2046_CS 33    // T_CS
 
 SPIClass touchscreenSPI = SPIClass(VSPI);
 XPT2046_Touchscreen touchscreen(XPT2046_CS, XPT2046_IRQ);
 
-/* ---------------- DISPLAY ---------------- */
-#define DISP_W 320
-#define DISP_H 240
-#define DRAW_BUF_SIZE (DISP_W * DISP_H / 10 * (LV_COLOR_DEPTH / 8))
+#define SCREEN_WIDTH 240
+#define SCREEN_HEIGHT 320
+
+#define DRAW_BUF_SIZE (SCREEN_WIDTH * SCREEN_HEIGHT / 10 * (LV_COLOR_DEPTH / 8))
 uint32_t draw_buf[DRAW_BUF_SIZE / 4];
 
 /* ---------------- STATES ---------------- */
@@ -32,41 +31,39 @@ bool air_active      = false;
 lv_obj_t *tabview;
 lv_obj_t *water_btn, *light_btn, *air_btn;
 lv_obj_t *water_led, *light_led, *air_led;
-lv_obj_t *touch_indicator = NULL;
+
+// If logging is enabled, it will inform the user about what is happening in the library
+void log_print(lv_log_level_t level, const char * buf) {
+  LV_UNUSED(level);
+  Serial.println(buf);
+  Serial.flush();
+}
 
 /* ---------------- TOUCH READ ---------------- */
 void touchscreen_read(lv_indev_t * indev, lv_indev_data_t * data) {
-  if (touchscreen.tirqTouched() && touchscreen.touched()) {
+  // Checks if Touchscreen was touched, and prints X, Y and Pressure (Z)
+  if(touchscreen.tirqTouched() && touchscreen.touched()) {
+    // Get Touchscreen points
     TS_Point p = touchscreen.getPoint();
+    // Calibrate Touchscreen points with map function to the correct width and height
+    int x = map(p.x, 200, 3700, 1, SCREEN_WIDTH);
+    int y = map(p.y, 240, 3800, 1, SCREEN_HEIGHT);
+
     data->state = LV_INDEV_STATE_PRESSED;
-    // Calibrated values - AXES ARE SWAPPED!
-    // Touch Y maps to Screen X
-    // Touch X maps to Screen Y
-    data->point.x = map(p.y, 312, 3881, 0, DISP_W);
-    data->point.y = map(p.x, 275, 3788, DISP_H, 0);
-    
-    // Visual feedback - draw circle where touch is detected
-    if (touch_indicator == NULL) {
-      touch_indicator = lv_obj_create(lv_screen_active());
-      lv_obj_set_size(touch_indicator, 20, 20);
-      lv_obj_set_style_radius(touch_indicator, LV_RADIUS_CIRCLE, 0);
-      lv_obj_set_style_bg_color(touch_indicator, lv_color_hex(0xFF00FF), 0);
-      lv_obj_set_style_border_width(touch_indicator, 2, 0);
-      lv_obj_set_style_border_color(touch_indicator, lv_color_hex(0xFFFFFF), 0);
-      lv_obj_clear_flag(touch_indicator, LV_OBJ_FLAG_CLICKABLE);
-    }
-    lv_obj_set_pos(touch_indicator, data->point.x - 10, data->point.y - 10);
-    lv_obj_clear_flag(touch_indicator, LV_OBJ_FLAG_HIDDEN);
-    
-    // Print raw and mapped values to Serial for debugging
-    Serial.printf("Raw: X=%d Y=%d -> Mapped: X=%d Y=%d\n",
-                  p.x, p.y, data->point.x, data->point.y);
-  } else {
+
+    // Set the coordinates
+    data->point.x = x;
+    data->point.y = y;
+
+    // Print Touchscreen info about X, Y and Pressure (Z) on the Serial Monitor
+    Serial.print("X = ");
+    Serial.print(x);
+    Serial.print(" | Y = ");
+    Serial.print(y);
+    Serial.println();
+  }
+  else {
     data->state = LV_INDEV_STATE_RELEASED;
-    // Hide touch indicator when not touching
-    if (touch_indicator != NULL) {
-      lv_obj_add_flag(touch_indicator, LV_OBJ_FLAG_HIDDEN);
-    }
   }
 }
 
@@ -79,24 +76,36 @@ void set_led(lv_obj_t *led, bool on) {
 
 /* ---------------- CALLBACKS ---------------- */
 static void water_cb(lv_event_t * e) {
-  watering_active = !watering_active;
-  set_led(water_led, watering_active);
-  lv_label_set_text(lv_obj_get_child(water_btn, 0),
-                    watering_active ? "ON" : "OFF");
+  lv_event_code_t code = lv_event_get_code(e);
+  if(code == LV_EVENT_CLICKED) {
+    watering_active = !watering_active;
+    set_led(water_led, watering_active);
+    lv_label_set_text(lv_obj_get_child(water_btn, 0),
+                      watering_active ? "ON" : "OFF");
+    LV_LOG_USER("Watering System %s", watering_active ? "ON" : "OFF");
+  }
 }
 
 static void light_cb(lv_event_t * e) {
-  lighting_active = !lighting_active;
-  set_led(light_led, lighting_active);
-  lv_label_set_text(lv_obj_get_child(light_btn, 0),
-                    lighting_active ? "ON" : "OFF");
+  lv_event_code_t code = lv_event_get_code(e);
+  if(code == LV_EVENT_CLICKED) {
+    lighting_active = !lighting_active;
+    set_led(light_led, lighting_active);
+    lv_label_set_text(lv_obj_get_child(light_btn, 0),
+                      lighting_active ? "ON" : "OFF");
+    LV_LOG_USER("Lighting System %s", lighting_active ? "ON" : "OFF");
+  }
 }
 
 static void air_cb(lv_event_t * e) {
-  air_active = !air_active;
-  set_led(air_led, air_active);
-  lv_label_set_text(lv_obj_get_child(air_btn, 0),
-                    air_active ? "ON" : "OFF");
+  lv_event_code_t code = lv_event_get_code(e);
+  if(code == LV_EVENT_CLICKED) {
+    air_active = !air_active;
+    set_led(air_led, air_active);
+    lv_label_set_text(lv_obj_get_child(air_btn, 0),
+                      air_active ? "ON" : "OFF");
+    LV_LOG_USER("Air Quality System %s", air_active ? "ON" : "OFF");
+  }
 }
 
 /* ---------------- DASHBOARD ---------------- */
@@ -170,7 +179,7 @@ void create_controls(lv_obj_t *parent) {
 /* ---------------- GUI ---------------- */
 void create_gui() {
   tabview = lv_tabview_create(lv_screen_active());
-  lv_obj_set_size(tabview, DISP_W, DISP_H);
+  lv_obj_set_size(tabview, SCREEN_WIDTH, SCREEN_HEIGHT);
   lv_tabview_set_tab_bar_size(tabview, 26);
 
   lv_obj_t *dash = lv_tabview_add_tab(tabview, "Dashboard");
@@ -184,14 +193,16 @@ void create_gui() {
   create_controls(ctrl);
 }
 
-
 /* ---------------- SETUP ---------------- */
 void setup() {
+  String LVGL_Arduino = String("LVGL Library Version: ") + lv_version_major() + "." + lv_version_minor() + "." + lv_version_patch();
   Serial.begin(115200);
-  delay(1000);
-  Serial.println("Mock UI with Touch Debug");
+  Serial.println(LVGL_Arduino);
+  Serial.println("Smart Greenhouse Control System");
   
   lv_init();
+  // Register print function for debugging
+  lv_log_register_print_cb(log_print);
 
   touchscreenSPI.begin(XPT2046_CLK, XPT2046_MISO,
                        XPT2046_MOSI, XPT2046_CS);
@@ -199,7 +210,7 @@ void setup() {
   touchscreen.setRotation(2);
 
   lv_display_t *disp = lv_tft_espi_create(
-    240, 320, draw_buf, sizeof(draw_buf)
+    SCREEN_WIDTH, SCREEN_HEIGHT, draw_buf, sizeof(draw_buf)
   );
   lv_display_set_rotation(disp, LV_DISPLAY_ROTATION_270);
 
@@ -212,7 +223,7 @@ void setup() {
 
 /* ---------------- LOOP ---------------- */
 void loop() {
-  lv_tick_inc(5);
-  lv_task_handler();
-  delay(5);
+  lv_task_handler();  // let the GUI do its work
+  lv_tick_inc(5);     // tell LVGL how much time has passed
+  delay(5);           // let this time pass
 }
