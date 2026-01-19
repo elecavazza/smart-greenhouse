@@ -1,4 +1,0 @@
-Bottom Left: Raw X = 3787, Raw Y = 3872
-Bottom Right: Raw X = 3789, Raw Y = 332
-Top Right: Raw X = 274, Raw Y = 293
-Top Left: Raw X = 276, Raw Y = 3890
