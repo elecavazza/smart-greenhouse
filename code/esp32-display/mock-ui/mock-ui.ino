@@ -112,27 +112,45 @@ static void air_cb(lv_event_t * e) {
 }
 
 /* ---------------- DASHBOARD ---------------- */
-void dashboard_row(lv_obj_t *parent, int y, lv_color_t c, const char *txt) {
-  lv_obj_t *box = lv_obj_create(parent);
-  lv_obj_set_width(box, lv_pct(100));
-  lv_obj_set_height(box, 32);
-  lv_obj_set_pos(box, 0, y);
-  lv_obj_set_style_bg_color(box, c, 0);
-  lv_obj_set_style_pad_all(box, 4, 0);
-  lv_obj_remove_flag(box, LV_OBJ_FLAG_SCROLLABLE);
-  lv_obj_clear_flag(box, LV_OBJ_FLAG_GESTURE_BUBBLE);
+void dashboard_row(lv_obj_t *parent, int y, const char *label, const char *value, lv_color_t indicator_color) {
+  lv_obj_t *row = lv_obj_create(parent);
+  lv_obj_set_width(row, lv_pct(100));
+  lv_obj_set_height(row, 40);
+  lv_obj_set_pos(row, 0, y);
+  lv_obj_set_style_pad_all(row, 6, 0);
+  lv_obj_set_style_bg_color(row, lv_color_hex(0xF0F0F0), 0);
+  lv_obj_set_style_border_width(row, 1, 0);
+  lv_obj_set_style_border_color(row, lv_color_hex(0xDDDDDD), 0);
+  lv_obj_remove_flag(row, LV_OBJ_FLAG_SCROLLABLE);
+  lv_obj_clear_flag(row, LV_OBJ_FLAG_GESTURE_BUBBLE);
 
-  lv_obj_t *lbl = lv_label_create(box);
-  lv_label_set_text(lbl, txt);
-  lv_obj_align(lbl, LV_ALIGN_LEFT_MID, 6, 0);
+  // Label on the left
+  lv_obj_t *lbl = lv_label_create(row);
+  lv_label_set_text(lbl, label);
+  lv_obj_set_style_text_color(lbl, lv_color_hex(0x333333), 0);
+  lv_obj_align(lbl, LV_ALIGN_LEFT_MID, 8, 0);
+
+  // Value on the right
+  lv_obj_t *val = lv_label_create(row);
+  lv_label_set_text(val, value);
+  lv_obj_set_style_text_color(val, lv_color_hex(0x000000), 0);
+  lv_obj_set_style_text_font(val, &lv_font_montserrat_14, 0);
+  lv_obj_align(val, LV_ALIGN_RIGHT_MID, -30, 0);
+
+  // Color indicator circle
+  lv_obj_t *indicator = lv_obj_create(row);
+  lv_obj_set_size(indicator, 16, 16);
+  lv_obj_align(indicator, LV_ALIGN_RIGHT_MID, -6, 0);
+  lv_obj_set_style_radius(indicator, LV_RADIUS_CIRCLE, 0);
+  lv_obj_set_style_bg_color(indicator, indicator_color, 0);
+  lv_obj_set_style_border_width(indicator, 0, 0);
 }
 
 void create_dashboard(lv_obj_t *parent) {
-  dashboard_row(parent, 8,  lv_color_hex(0xFF6B35), "Temp: 24.5 C");
-  dashboard_row(parent, 44, lv_color_hex(0x4D96FF), "Humidity: 65 %");
-  dashboard_row(parent, 80, lv_color_hex(0x9B59B6), "VOC: 125 ppb");
-  dashboard_row(parent, 116,lv_color_hex(0x8D6E63), "Soil: 45 %");
-  dashboard_row(parent, 152,lv_color_hex(0x1E88E5), "Water: 75 %");
+  dashboard_row(parent, 15,  "Temperature", "24.5°C", lv_color_hex(0xFF6B35));
+  dashboard_row(parent, 65,  "Humidity", "65%", lv_color_hex(0x4D96FF));
+  dashboard_row(parent, 115, "Soil Moisture", "45%", lv_color_hex(0x8D6E63));
+  dashboard_row(parent, 165, "Water Level", "75%", lv_color_hex(0x1E88E5));
 }
 
 /* ---------------- CONTROL ROW ---------------- */
