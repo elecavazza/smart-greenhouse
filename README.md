@@ -22,14 +22,13 @@ As part of this project there will be a number of systems:
 ### CYD ESP32-2432S028
 
 To program the CYD ESP32-2432S028 we will be using Arduino C/C++.  
-To upload code to the device we use the Arduino IDE and upload at a baud rate of 115200 via the Micro USB connector.  
-The target board used is the `ESP32 Dev Module` and the external dependencies are:  
+To upload code to the device we use the Arduino IDE to compile it and the Micro USB connector to upload it via serial.  
+To get it to work:  
 
-```c
-#include <lvgl.h>
-#include <TFT_eSPI.h>
-#include <XPT2046_Touchscreen.h>
-```
+* upload at a baud rate of 115200  
+* target board used is the `ESP32 Dev Module`
+* the external dependencies are:  `lvgl`, `TFT_eSPI`, `XPT2046_Touchscreen`
+* enable erase all flash on sketch upload
 
 ### Raspberry Pi Pico
 
@@ -75,5 +74,3 @@ Ikea Akerbaer Greenhouse:
 ![Ikea Akerbaer Dimensions](./pictures/ikea/akerbaer-greenhouse-in-outdoor-white__1357160_pe953473_s5.jpg)
 
 [3D Model](./3d-models/akerbar-white-30537170.fbx)
-
-
