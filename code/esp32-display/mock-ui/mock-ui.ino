@@ -5,6 +5,7 @@
 #include <lvgl.h>
 #include <TFT_eSPI.h>
 #include <XPT2046_Touchscreen.h>
+#include <Preferences.h>
 
 /* ---------------- TOUCH ---------------- */
 #define XPT2046_IRQ 36
@@ -31,16 +32,41 @@ bool air_active      = false;
 lv_obj_t *tabview;
 lv_obj_t *water_btn, *light_btn, *air_btn;
 lv_obj_t *water_led, *light_led, *air_led;
+lv_obj_t *touch_indicator = NULL;
 
 /* ---------------- TOUCH READ ---------------- */
 void touchscreen_read(lv_indev_t * indev, lv_indev_data_t * data) {
   if (touchscreen.tirqTouched() && touchscreen.touched()) {
     TS_Point p = touchscreen.getPoint();
     data->state = LV_INDEV_STATE_PRESSED;
-    data->point.x = map(p.x, 200, 3700, 0, DISP_W);
-    data->point.y = map(p.y, 240, 3800, 0, DISP_H);
+    // Calibrated values - AXES ARE SWAPPED!
+    // Touch Y maps to Screen X
+    // Touch X maps to Screen Y
+    data->point.x = map(p.y, 312, 3881, 0, DISP_W);
+    data->point.y = map(p.x, 275, 3788, DISP_H, 0);
+    
+    // Visual feedback - draw circle where touch is detected
+    if (touch_indicator == NULL) {
+      touch_indicator = lv_obj_create(lv_screen_active());
+      lv_obj_set_size(touch_indicator, 20, 20);
+      lv_obj_set_style_radius(touch_indicator, LV_RADIUS_CIRCLE, 0);
+      lv_obj_set_style_bg_color(touch_indicator, lv_color_hex(0xFF00FF), 0);
+      lv_obj_set_style_border_width(touch_indicator, 2, 0);
+      lv_obj_set_style_border_color(touch_indicator, lv_color_hex(0xFFFFFF), 0);
+      lv_obj_clear_flag(touch_indicator, LV_OBJ_FLAG_CLICKABLE);
+    }
+    lv_obj_set_pos(touch_indicator, data->point.x - 10, data->point.y - 10);
+    lv_obj_clear_flag(touch_indicator, LV_OBJ_FLAG_HIDDEN);
+    
+    // Print raw and mapped values to Serial for debugging
+    Serial.printf("Raw: X=%d Y=%d -> Mapped: X=%d Y=%d\n",
+                  p.x, p.y, data->point.x, data->point.y);
   } else {
     data->state = LV_INDEV_STATE_RELEASED;
+    // Hide touch indicator when not touching
+    if (touch_indicator != NULL) {
+      lv_obj_add_flag(touch_indicator, LV_OBJ_FLAG_HIDDEN);
+    }
   }
 }
 
@@ -161,6 +187,10 @@ void create_gui() {
 
 /* ---------------- SETUP ---------------- */
 void setup() {
+  Serial.begin(115200);
+  delay(1000);
+  Serial.println("Mock UI with Touch Debug");
+  
   lv_init();
 
   touchscreenSPI.begin(XPT2046_CLK, XPT2046_MISO,
