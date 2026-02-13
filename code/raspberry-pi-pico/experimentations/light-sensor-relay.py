@@ -1,10 +1,10 @@
-from machine import Pin
+from machine import Pin, ADC
 import time
 
 # Relay control pin (change if needed)
 relay = Pin(15, Pin.OUT)
 
-ldr = machine.ADC(27)  # Initialize an ADC object for pin 27
+ldr = ADC(27)  # Initialize an ADC object for pin 27
 
 # Some relay modules are ACTIVE LOW
 # If yours is ACTIVE HIGH, swap 0 and 1 below
