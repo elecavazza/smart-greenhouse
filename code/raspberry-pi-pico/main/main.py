@@ -2,7 +2,7 @@
 # import time
 
 
-# sensor = TemperatureAndHumiditySensor(serialClockLinePinNumber = 1, serialDataLinePinNumber = 0)
+# sensor = TemperatureAndHumiditySensor(serialClockLinePinNumber = 5, serialDataLinePinNumber = 4)
 
 # while True:
 #     temperature, humidty = sensor.read()
