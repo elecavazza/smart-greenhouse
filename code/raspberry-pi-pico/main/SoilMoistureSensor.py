@@ -11,8 +11,7 @@ class SoilMoistureSensor:
         self.analogDigitalConverter = ADC(pinNumber)
     
     def readRaw(self, samples = 10):
-        return sum(self.analogDigitalConverter.read_u16() for _ in range(samples)) // samples
-        
+        return sum(self.analogDigitalConverter.read_u16() for _ in range(samples)) // samples 
     
     def readLevel(self):
         raw = self.readRaw()
