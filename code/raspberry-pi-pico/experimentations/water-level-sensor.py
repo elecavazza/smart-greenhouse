@@ -2,7 +2,7 @@ from machine import ADC, Pin
 import time
 
 # GP26 is ADC0
-water_sensor = ADC(26)
+water_sensor = ADC(28)
 
 # Pico reference voltage
 VREF = 3.3
