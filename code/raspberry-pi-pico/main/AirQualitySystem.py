@@ -30,7 +30,7 @@ class AirQualitySystem:
     
     def __init__(self):
         """Initialize air quality system components"""
-        self.fan = Relay(FAN_RELAY_PIN)
+        self.fan = Relay(FAN_RELAY_PIN, "FAN")
         self.sensor = TemperatureAndHumiditySensor(
             serialClockLinePinNumber=TEMP_HUMIDITY_SCL,
             serialDataLinePinNumber=TEMP_HUMIDITY_SDA

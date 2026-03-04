@@ -33,7 +33,7 @@ class WateringSystem:
     
     def __init__(self):
         """Initialize watering system components"""
-        self.pump = Relay(PUMP_RELAY_PIN)
+        self.pump = Relay(PUMP_RELAY_PIN, "PUMP")
         self.soilSensor = SoilMoistureSensor(SOIL_MOISTURE_PIN)
         self.waterLevelSensor = WaterLevelSensor(WATER_LEVEL_PIN)
         
