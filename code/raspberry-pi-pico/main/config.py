@@ -15,9 +15,9 @@ TEMP_HUMIDITY_SCL = 5       # GP5 - I2C clock
 TEMP_HUMIDITY_SDA = 4       # GP4 - I2C data
 
 # Relay Outputs (Active LOW)
-PUMP_RELAY_PIN = 15         # GP15 - Water pump relay
+PUMP_RELAY_PIN = 14         # GP15 - Water pump relay
 FAN_RELAY_PIN = 15          # GP14 - Ventilation fan relay
-LIGHT_RELAY_PIN = 13        # GP13 - Grow light relay
+LIGHT_RELAY_PIN = 10        # GP10 - Grow light relay
 
 # UART Communication with ESP32
 UART_TX_PIN = 0             # GP0 - UART0 TX
