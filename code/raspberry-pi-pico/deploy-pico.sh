@@ -43,12 +43,12 @@ echo -e "${GREEN}Smart Greenhouse - Pico Deployment${NC}"
 echo -e "${GREEN}======================================${NC}"
 echo ""
 
-# Check if mpremote is installed
-if ! command -v mpremote &> /dev/null; then
-    echo -e "${RED}Error: mpremote not found${NC}"
-    echo "Install it with: pip install mpremote"
-    exit 1
-fi
+# # Check if mpremote is installed
+# if ! command -v mpremote &> /dev/null; then
+#     echo -e "${RED}Error: mpremote not found${NC}"
+#     echo "Install it with: pip install mpremote"
+#     exit 1
+# fi
 
 # Determine the port
 if [ -n "$1" ]; then
@@ -57,7 +57,7 @@ if [ -n "$1" ]; then
 else
     echo -e "${YELLOW}Auto-detecting Pico...${NC}"
     # Try to find the Pico
-    PORT=$(mpremote connect list 2>/dev/null | grep -i "pico\|usb" | head -1 | awk '{print $1}' || true)
+    PORT=$(/Users/elenacavazza/Library/Python/3.9/bin/mpremote connect list 2>/dev/null | grep -i "pico\|usb" | head -1 | awk '{print $1}' || true)
     
     if [ -z "$PORT" ]; then
         echo -e "${RED}Error: Could not auto-detect Pico${NC}"
@@ -79,7 +79,7 @@ for file in "${FILES[@]}"; do
     filepath="$PICO_DIR/$file"
     if [ -f "$filepath" ]; then
         echo -n "  Uploading $file... "
-        mpremote connect "$PORT" cp "$filepath" ":$file"
+        /Users/elenacavazza/Library/Python/3.9/bin/mpremote connect "$PORT" cp "$filepath" ":$file"
         echo -e "${GREEN}✓${NC}"
     else
         echo -e "  ${RED}Missing: $filepath${NC}"
