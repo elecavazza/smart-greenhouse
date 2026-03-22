@@ -167,6 +167,31 @@ class GreenhouseController:
             self.airQualitySystem.disable()
             self.uart.sendStatus("AIR", False)
         
+        # Manual direct device controls (Options page)
+        elif cmd == "CMD:LED:ON":
+            print("[CONTROLLER] -> Manual LED ON")
+            self.lightingSystem.light.turnOn()
+            self.lightingSystem.isLightOn = True
+            
+        elif cmd == "CMD:LED:OFF":
+            print("[CONTROLLER] -> Manual LED OFF")
+            self.lightingSystem.light.turnOff()
+            self.lightingSystem.isLightOn = False
+            
+        elif cmd == "CMD:FAN:ON":
+            print("[CONTROLLER] -> Manual FAN ON")
+            self.airQualitySystem.fan.turnOn()
+            self.airQualitySystem.isFanOn = True
+            
+        elif cmd == "CMD:FAN:OFF":
+            print("[CONTROLLER] -> Manual FAN OFF")
+            self.airQualitySystem.fan.turnOff()
+            self.airQualitySystem.isFanOn = False
+            
+        elif cmd == "CMD:PUMP:PULSE":
+            print("[CONTROLLER] -> Manual PUMP PULSE triggered")
+            self.wateringSystem.pulse()
+        
         else:
             print(f"[CONTROLLER] WARNING: Unknown command: {cmd}")
     
