@@ -293,7 +293,7 @@ void updateDashboard() {
 }
 
 /* ---------------- CONTROL ROW FUNCTIONS ---------------- */
-void control_row(lv_obj_t *parent, int y, const char *name,
+void auto_row(lv_obj_t *parent, int y, const char *name,
                  lv_event_cb_t cb, lv_obj_t **btn, lv_obj_t **led) {
 
   lv_obj_t *row = lv_obj_create(parent);
@@ -325,14 +325,43 @@ void control_row(lv_obj_t *parent, int y, const char *name,
   set_led(*led, false);
 }
 
-void create_controls(lv_obj_t *parent) {
-  control_row(parent, 20,  "Watering System", water_cb, &water_btn, &water_led);
-  control_row(parent, 70,  "Lighting System", light_cb, &light_btn, &light_led);
-  control_row(parent, 120, "Air Quality System", air_cb, &air_btn, &air_led);
+void create_auto(lv_obj_t *parent) {
+  // Header label
+  lv_obj_t *header = lv_label_create(parent);
+  lv_label_set_text(header, "Automatic System Control");
+  lv_obj_set_style_text_font(header, &lv_font_montserrat_14, 0);
+  lv_obj_align(header, LV_ALIGN_TOP_MID, 0, 5);
+  
+  // Watering System - trigger condition
+  lv_obj_t *water_trigger = lv_label_create(parent);
+  lv_label_set_text(water_trigger, "Soil dry & water available");
+  lv_obj_set_style_text_font(water_trigger, &lv_font_montserrat_10, 0);
+  lv_obj_set_style_text_color(water_trigger, lv_color_hex(0x666666), 0);
+  lv_obj_set_pos(water_trigger, 10, 28);
+  
+  auto_row(parent, 40,  "Watering System", water_cb, &water_btn, &water_led);
+  
+  // Lighting System - trigger condition
+  lv_obj_t *light_trigger = lv_label_create(parent);
+  lv_label_set_text(light_trigger, "Ambient light low");
+  lv_obj_set_style_text_font(light_trigger, &lv_font_montserrat_10, 0);
+  lv_obj_set_style_text_color(light_trigger, lv_color_hex(0x666666), 0);
+  lv_obj_set_pos(light_trigger, 10, 82);
+  
+  auto_row(parent, 94,  "Lighting System", light_cb, &light_btn, &light_led);
+  
+  // Air Quality System - trigger condition
+  lv_obj_t *air_trigger = lv_label_create(parent);
+  lv_label_set_text(air_trigger, "Temp >23C or Humidity >80%/<40%");
+  lv_obj_set_style_text_font(air_trigger, &lv_font_montserrat_10, 0);
+  lv_obj_set_style_text_color(air_trigger, lv_color_hex(0x666666), 0);
+  lv_obj_set_pos(air_trigger, 10, 136);
+  
+  auto_row(parent, 148, "Air Quality System", air_cb, &air_btn, &air_led);
 }
 
 /* ---------------- OPTIONS PAGE FUNCTIONS ---------------- */
-void options_toggle_row(lv_obj_t *parent, int y, const char *name,
+void manual_toggle_row(lv_obj_t *parent, int y, const char *name,
                         lv_event_cb_t cb, lv_obj_t **btn, lv_obj_t **indicator) {
   lv_obj_t *row = lv_obj_create(parent);
   lv_obj_set_width(row, lv_pct(100));
@@ -363,7 +392,7 @@ void options_toggle_row(lv_obj_t *parent, int y, const char *name,
   set_led(*indicator, false);
 }
 
-void options_trigger_row(lv_obj_t *parent, int y, const char *name,
+void manual_trigger_row(lv_obj_t *parent, int y, const char *name,
                          lv_event_cb_t cb, lv_obj_t **btn) {
   lv_obj_t *row = lv_obj_create(parent);
   lv_obj_set_width(row, lv_pct(100));
@@ -389,7 +418,7 @@ void options_trigger_row(lv_obj_t *parent, int y, const char *name,
   lv_obj_center(btxt);
 }
 
-void create_options(lv_obj_t *parent) {
+void create_manual(lv_obj_t *parent) {
   // Header label
   lv_obj_t *header = lv_label_create(parent);
   lv_label_set_text(header, "Manual Device Control");
@@ -397,13 +426,13 @@ void create_options(lv_obj_t *parent) {
   lv_obj_align(header, LV_ALIGN_TOP_MID, 0, 5);
 
   // LED toggle (on/off)
-  options_toggle_row(parent, 30, "LED Light", manual_led_cb, &manual_led_btn, &manual_led_indicator);
+  manual_toggle_row(parent, 30, "LED Light", manual_led_cb, &manual_led_btn, &manual_led_indicator);
   
   // Fan toggle (on/off)
-  options_toggle_row(parent, 75, "Fan", manual_fan_cb, &manual_fan_btn, &manual_fan_indicator);
+  manual_toggle_row(parent, 75, "Fan", manual_fan_cb, &manual_fan_btn, &manual_fan_indicator);
   
   // Pump trigger (momentary pulse)
-  options_trigger_row(parent, 120, "Pump", manual_pump_cb, &manual_pump_btn);
+  manual_trigger_row(parent, 120, "Pump", manual_pump_cb, &manual_pump_btn);
 }
 
 /* ---------------- GUI SETUP ---------------- */
@@ -413,16 +442,16 @@ void create_gui() {
   lv_tabview_set_tab_bar_size(tabview, 26);
 
   lv_obj_t *dash = lv_tabview_add_tab(tabview, "Dashboard");
-  lv_obj_t *ctrl = lv_tabview_add_tab(tabview, "Controls");
-  lv_obj_t *opts = lv_tabview_add_tab(tabview, "Options");
+  lv_obj_t *ctrl = lv_tabview_add_tab(tabview, "Auto");
+  lv_obj_t *opts = lv_tabview_add_tab(tabview, "Manual");
 
   lv_obj_set_style_pad_top(dash, 8, 0);
   lv_obj_set_style_pad_top(ctrl, 8, 0);
   lv_obj_set_style_pad_top(opts, 8, 0);
 
   create_dashboard(dash);
-  create_controls(ctrl);
-  create_options(opts);
+  create_auto(ctrl);
+  create_manual(opts);
 }
 
 /* ---------------- MAIN SETUP AND LOOP ---------------- */
