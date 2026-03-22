@@ -53,6 +53,15 @@ lv_obj_t *water_btn, *light_btn, *air_btn;
 lv_obj_t *water_led, *light_led, *air_led;
 lv_obj_t *temp_label, *humidity_label, *soil_label, *water_label;
 
+// Manual control elements (Options page)
+lv_obj_t *manual_led_btn, *manual_fan_btn, *manual_pump_btn;
+lv_obj_t *manual_led_indicator, *manual_fan_indicator;
+
+struct ManualState {
+  bool led_on = false;
+  bool fan_on = false;
+} manual;
+
 /* ---------------- UART COMMUNICATION ---------------- */
 void sendCommand(const char* command) {
   Serial2.println(command);
@@ -192,6 +201,38 @@ static void air_cb(lv_event_t * e) {
   }
 }
 
+/* ---------------- MANUAL CONTROL CALLBACKS (Options page) ---------------- */
+static void manual_led_cb(lv_event_t * e) {
+  lv_event_code_t code = lv_event_get_code(e);
+  if(code == LV_EVENT_CLICKED) {
+    manual.led_on = !manual.led_on;
+    sendCommand(manual.led_on ? "CMD:LED:ON" : "CMD:LED:OFF");
+    set_led(manual_led_indicator, manual.led_on);
+    lv_label_set_text(lv_obj_get_child(manual_led_btn, 0), manual.led_on ? "Turn Off" : "Turn On");
+    LV_LOG_USER("Manual LED %s", manual.led_on ? "ON" : "OFF");
+  }
+}
+
+static void manual_fan_cb(lv_event_t * e) {
+  lv_event_code_t code = lv_event_get_code(e);
+  if(code == LV_EVENT_CLICKED) {
+    manual.fan_on = !manual.fan_on;
+    sendCommand(manual.fan_on ? "CMD:FAN:ON" : "CMD:FAN:OFF");
+    set_led(manual_fan_indicator, manual.fan_on);
+    lv_label_set_text(lv_obj_get_child(manual_fan_btn, 0), manual.fan_on ? "Turn Off" : "Turn On");
+    LV_LOG_USER("Manual Fan %s", manual.fan_on ? "ON" : "OFF");
+  }
+}
+
+static void manual_pump_cb(lv_event_t * e) {
+  lv_event_code_t code = lv_event_get_code(e);
+  if(code == LV_EVENT_CLICKED) {
+    // Pump triggers a short pulse - send command and Pico handles the timing
+    sendCommand("CMD:PUMP:PULSE");
+    LV_LOG_USER("Manual Pump PULSE triggered");
+  }
+}
+
 /* ---------------- DASHBOARD FUNCTIONS ---------------- */
 void dashboard_row(lv_obj_t *parent, int y, const char *label, const char *value, 
                    lv_color_t indicator_color, lv_obj_t **value_label) {
@@ -290,6 +331,81 @@ void create_controls(lv_obj_t *parent) {
   control_row(parent, 120, "Air Quality System", air_cb, &air_btn, &air_led);
 }
 
+/* ---------------- OPTIONS PAGE FUNCTIONS ---------------- */
+void options_toggle_row(lv_obj_t *parent, int y, const char *name,
+                        lv_event_cb_t cb, lv_obj_t **btn, lv_obj_t **indicator) {
+  lv_obj_t *row = lv_obj_create(parent);
+  lv_obj_set_width(row, lv_pct(100));
+  lv_obj_set_height(row, 36);
+  lv_obj_set_pos(row, 0, y);
+  lv_obj_set_style_pad_all(row, 4, 0);
+  lv_obj_remove_flag(row, LV_OBJ_FLAG_SCROLLABLE);
+  lv_obj_clear_flag(row, LV_OBJ_FLAG_GESTURE_BUBBLE);
+
+  lv_obj_t *lbl = lv_label_create(row);
+  lv_label_set_text(lbl, name);
+  lv_obj_align(lbl, LV_ALIGN_LEFT_MID, 4, 0);
+
+  *btn = lv_button_create(row);
+  lv_obj_set_size(*btn, 70, 26);
+  lv_obj_align(*btn, LV_ALIGN_RIGHT_MID, -30, 0);
+  lv_obj_add_event_cb(*btn, cb, LV_EVENT_CLICKED, NULL);
+  lv_obj_clear_flag(*btn, LV_OBJ_FLAG_GESTURE_BUBBLE);
+
+  lv_obj_t *btxt = lv_label_create(*btn);
+  lv_label_set_text(btxt, "Turn On");
+  lv_obj_center(btxt);
+
+  *indicator = lv_obj_create(row);
+  lv_obj_set_size(*indicator, 14, 14);
+  lv_obj_align(*indicator, LV_ALIGN_RIGHT_MID, -6, 0);
+  lv_obj_set_style_radius(*indicator, LV_RADIUS_CIRCLE, 0);
+  set_led(*indicator, false);
+}
+
+void options_trigger_row(lv_obj_t *parent, int y, const char *name,
+                         lv_event_cb_t cb, lv_obj_t **btn) {
+  lv_obj_t *row = lv_obj_create(parent);
+  lv_obj_set_width(row, lv_pct(100));
+  lv_obj_set_height(row, 36);
+  lv_obj_set_pos(row, 0, y);
+  lv_obj_set_style_pad_all(row, 4, 0);
+  lv_obj_remove_flag(row, LV_OBJ_FLAG_SCROLLABLE);
+  lv_obj_clear_flag(row, LV_OBJ_FLAG_GESTURE_BUBBLE);
+
+  lv_obj_t *lbl = lv_label_create(row);
+  lv_label_set_text(lbl, name);
+  lv_obj_align(lbl, LV_ALIGN_LEFT_MID, 4, 0);
+
+  *btn = lv_button_create(row);
+  lv_obj_set_size(*btn, 70, 26);
+  lv_obj_align(*btn, LV_ALIGN_RIGHT_MID, -6, 0);
+  lv_obj_add_event_cb(*btn, cb, LV_EVENT_CLICKED, NULL);
+  lv_obj_clear_flag(*btn, LV_OBJ_FLAG_GESTURE_BUBBLE);
+  lv_obj_set_style_bg_color(*btn, lv_color_hex(0x2196F3), 0);
+
+  lv_obj_t *btxt = lv_label_create(*btn);
+  lv_label_set_text(btxt, "Trigger");
+  lv_obj_center(btxt);
+}
+
+void create_options(lv_obj_t *parent) {
+  // Header label
+  lv_obj_t *header = lv_label_create(parent);
+  lv_label_set_text(header, "Manual Device Control");
+  lv_obj_set_style_text_font(header, &lv_font_montserrat_14, 0);
+  lv_obj_align(header, LV_ALIGN_TOP_MID, 0, 5);
+
+  // LED toggle (on/off)
+  options_toggle_row(parent, 30, "LED Light", manual_led_cb, &manual_led_btn, &manual_led_indicator);
+  
+  // Fan toggle (on/off)
+  options_toggle_row(parent, 75, "Fan", manual_fan_cb, &manual_fan_btn, &manual_fan_indicator);
+  
+  // Pump trigger (momentary pulse)
+  options_trigger_row(parent, 120, "Pump", manual_pump_cb, &manual_pump_btn);
+}
+
 /* ---------------- GUI SETUP ---------------- */
 void create_gui() {
   tabview = lv_tabview_create(lv_screen_active());
@@ -298,12 +414,15 @@ void create_gui() {
 
   lv_obj_t *dash = lv_tabview_add_tab(tabview, "Dashboard");
   lv_obj_t *ctrl = lv_tabview_add_tab(tabview, "Controls");
+  lv_obj_t *opts = lv_tabview_add_tab(tabview, "Options");
 
   lv_obj_set_style_pad_top(dash, 8, 0);
   lv_obj_set_style_pad_top(ctrl, 8, 0);
+  lv_obj_set_style_pad_top(opts, 8, 0);
 
   create_dashboard(dash);
   create_controls(ctrl);
+  create_options(opts);
 }
 
 /* ---------------- MAIN SETUP AND LOOP ---------------- */
