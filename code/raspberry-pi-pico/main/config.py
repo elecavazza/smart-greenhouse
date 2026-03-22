@@ -34,7 +34,7 @@ SOIL_DRY_THRESHOLD = 40000  # Above this = soil is dry, needs water
 WATER_LOW_THRESHOLD = 15000 # Below this = reservoir is empty
 
 # Temperature (Celsius)
-TEMP_HIGH_THRESHOLD = 28.0  # Above this = too hot, turn on fan
+TEMP_HIGH_THRESHOLD = 23.0  # Above this = too hot, turn on fan
 TEMP_LOW_THRESHOLD = 18.0   # Below this = too cold, turn off fan to preserve heat
 
 # Humidity (Percentage)
