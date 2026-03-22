@@ -25,7 +25,7 @@ class LightingSystem:
         """Initialize lighting system components"""
         print(f"[LIGHTING] Initializing with relay on GP{LIGHT_RELAY_PIN}, sensor on ADC{LIGHT_SENSOR_PIN}")
         # LED relay uses active-HIGH logic (opposite of other relays)
-        self.light = Relay(LIGHT_RELAY_PIN, "GROW_LIGHT", active_low=True)
+        self.light = Relay(LIGHT_RELAY_PIN, "GROW_LIGHT", active_low=False)
         self.sensor = LightSensor(LIGHT_SENSOR_PIN)
         
         # System state

@@ -292,7 +292,7 @@ void updateDashboard() {
   lv_label_set_text(water_label, buffer);
 }
 
-/* ---------------- CONTROL ROW FUNCTIONS ---------------- */
+/* ---------------- AUTO ROW FUNCTIONS ---------------- */
 void auto_row(lv_obj_t *parent, int y, const char *name,
                  lv_event_cb_t cb, lv_obj_t **btn, lv_obj_t **led) {
 
@@ -360,7 +360,7 @@ void create_auto(lv_obj_t *parent) {
   auto_row(parent, 148, "Air Quality System", air_cb, &air_btn, &air_led);
 }
 
-/* ---------------- OPTIONS PAGE FUNCTIONS ---------------- */
+/* ---------------- MANUAL PAGE FUNCTIONS ---------------- */
 void manual_toggle_row(lv_obj_t *parent, int y, const char *name,
                         lv_event_cb_t cb, lv_obj_t **btn, lv_obj_t **indicator) {
   lv_obj_t *row = lv_obj_create(parent);
@@ -418,6 +418,7 @@ void manual_trigger_row(lv_obj_t *parent, int y, const char *name,
   lv_obj_center(btxt);
 }
 
+void create_manual(lv_obj_t *parent) {
 void create_manual(lv_obj_t *parent) {
   // Header label
   lv_obj_t *header = lv_label_create(parent);
