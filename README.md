@@ -30,6 +30,44 @@ To get it to work:
 * the external dependencies are:  `lvgl`, `TFT_eSPI`, `XPT2046_Touchscreen`
 * enable erase all flash on sketch upload
 
+#### Arduino Setup
+
+```bash
+Arduino
+Version: 2.3.7
+Date: 2025-12-17T16:03:27.077Z (3 months ago)
+CLI Version: 1.3.1
+
+arduino-cli  Version: 1.4.1 Commit: Homebrew Date: 2026-01-19T16:11:40Z
+{}
+
+ID            Installed        Latest           Name
+arduino:avr   1.8.6            1.8.7            Arduino AVR Boards
+arduino:esp32 2.0.18-arduino.5 2.0.18-arduino.5 Arduino ESP32 Boards
+esp32:esp32   3.3.5            3.3.7            esp32
+
+Name                Installed   Available    Location Description
+EspSoftwareSerial   8.1.0       -            user     -
+lvgl                9.4.0       9.5.0        user     Full-featured Graphics Library for Em...
+TFT_eSPI            2.5.43      -            user     -
+XPT2046_Touchscreen 1.4         -            user     -
+
+Port                            Protocol Type              Board Name FQBN Core
+/dev/cu.Bluetooth-Incoming-Port serial   Serial Port       Unknown
+/dev/cu.SoundcoreLifeP3         serial   Serial Port       Unknown
+/dev/cu.StrawberryMoon          serial   Serial Port       Unknown
+/dev/cu.debug-console           serial   Serial Port       Unknown
+/dev/cu.usbserial-210           serial   Serial Port (USB) Unknown
+```
+
+```bash
+arduino-cli version
+arduino-cli config dump
+arduino-cli core list
+arduino-cli lib list
+arduino-cli board list
+```
+
 ### Raspberry Pi Pico
 
 To program the Raspberry Pi Pico we will be using MicroPython.  
