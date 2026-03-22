@@ -158,7 +158,7 @@ void set_led(lv_obj_t *led, bool on) {
 
 void updateControlLED(lv_obj_t *led, lv_obj_t *btn, bool active) {
   set_led(led, active);
-  lv_label_set_text(lv_obj_get_child(btn, 0), active ? "ON" : "OFF");
+  lv_label_set_text(lv_obj_get_child(btn, 0), active ? "Turn Off" : "Turn On");
 }
 
 /* ---------------- CONTROL CALLBACKS ---------------- */
@@ -268,13 +268,13 @@ void control_row(lv_obj_t *parent, int y, const char *name,
   lv_obj_align(lbl, LV_ALIGN_LEFT_MID, 4, 0);
 
   *btn = lv_button_create(row);
-  lv_obj_set_size(*btn, 60, 26);
+  lv_obj_set_size(*btn, 70, 26);
   lv_obj_align(*btn, LV_ALIGN_RIGHT_MID, -30, 0);
   lv_obj_add_event_cb(*btn, cb, LV_EVENT_CLICKED, NULL);
   lv_obj_clear_flag(*btn, LV_OBJ_FLAG_GESTURE_BUBBLE);
 
   lv_obj_t *btxt = lv_label_create(*btn);
-  lv_label_set_text(btxt, "OFF");
+  lv_label_set_text(btxt, "Turn On");
   lv_obj_center(btxt);
 
   *led = lv_obj_create(row);

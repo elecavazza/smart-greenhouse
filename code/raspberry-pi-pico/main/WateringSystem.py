@@ -38,7 +38,7 @@ class WateringSystem:
         self.waterLevelSensor = WaterLevelSensor(WATER_LEVEL_PIN)
         
         # System state
-        self.enabled = True  # System on/off (controlled by UI)
+        self.enabled = False  # System on/off (controlled by UI)
         self.lastPulseTime = 0  # Timestamp of last pump pulse
         self.isPumping = False  # Current pump state
         

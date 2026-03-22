@@ -29,7 +29,7 @@ class LightingSystem:
         self.sensor = LightSensor(LIGHT_SENSOR_PIN)
         
         # System state
-        self.enabled = True  # System on/off (controlled by UI)
+        self.enabled = False  # System on/off (controlled by UI)
         self.isLightOn = False  # Current light state
         
         # Ensure light is off at startup

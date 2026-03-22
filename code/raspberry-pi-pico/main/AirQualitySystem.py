@@ -37,7 +37,7 @@ class AirQualitySystem:
         )
         
         # System state
-        self.enabled = True  # System on/off (controlled by UI)
+        self.enabled = False  # System on/off (controlled by UI)
         self.isFanOn = False  # Current fan state
         
         # Cached sensor readings
