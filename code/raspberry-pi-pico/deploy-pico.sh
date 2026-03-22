@@ -62,7 +62,7 @@ else
     if [ -z "$PORT" ]; then
         echo -e "${RED}Error: Could not auto-detect Pico${NC}"
         echo "Available ports:"
-        mpremote connect list
+        /Users/elenacavazza/Library/Python/3.9/bin/mpremote connect list
         echo ""
         echo "Usage: $0 /dev/tty.usbmodem..."
         exit 1
