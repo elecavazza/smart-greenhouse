@@ -1,5 +1,7 @@
 # smart-greenhouse
 
+![Smart GreenHouse System Diagram with Wiring](./pictures/system/smart-greenhouse-system-diagram-with-wiring.jpeg)
+
 As part of my Mechatronics Project I will be creating a Smart Automated Greenhouse.  
 As part of this project there will be a number of systems:  
 
