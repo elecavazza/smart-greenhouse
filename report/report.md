@@ -138,11 +138,11 @@ The system comprises three automated subsystems:
 #### Air Quality System
 
 - **Trigger Conditions**:
-  - Temperature > 23°C (too hot)
-  - Humidity > 80% (too humid)
-  - Humidity < 40% (too dry - circulate air)
+  - Temperature > 25°C (too hot)
+  - Humidity > 70% (too humid)
+  - Humidity < 50% (too dry - circulate air)
 - **Action**: Activate ventilation fans
-- **Override**: Fan stays off if temperature < 18°C (preserve heat)
+- **Override**: Fan stays off if temperature < 20°C (preserve heat)
 
 #### Lighting System
 
@@ -525,10 +525,10 @@ def pulse(self):
 
 | Condition | Action | Reason |
 |-----------|--------|--------|
-| Temp > 23°C | Fan ON | Too hot |
-| Temp < 18°C | Fan OFF | Preserve heat |
-| Humidity > 80% | Fan ON | Too humid |
-| Humidity < 40% | Fan ON | Circulate air |
+| Temp > 25°C | Fan ON | Too hot |
+| Temp < 20°C | Fan OFF | Preserve heat |
+| Humidity > 70% | Fan ON | Too humid |
+| Humidity < 50% | Fan ON | Circulate air |
 | Otherwise | Fan OFF | Conditions optimal |
 
 **Lighting System - Light Level Control:**
@@ -555,10 +555,10 @@ Key thresholds and timing values defined in [`config.py`](../code/raspberry-pi-p
 |-----------|-------|-------------|
 | `SOIL_DRY_THRESHOLD` | 40000 | ADC value indicating dry soil |
 | `WATER_LOW_THRESHOLD` | 15000 | ADC value indicating empty reservoir |
-| `TEMP_HIGH_THRESHOLD` | 23.0°C | Temperature to trigger cooling |
-| `TEMP_LOW_THRESHOLD` | 18.0°C | Temperature to preserve heat |
-| `HUMIDITY_HIGH_THRESHOLD` | 80% | Humidity to trigger ventilation |
-| `HUMIDITY_LOW_THRESHOLD` | 40% | Low humidity threshold |
+| `TEMP_HIGH_THRESHOLD` | 25.0°C | Temperature to trigger cooling |
+| `TEMP_LOW_THRESHOLD` | 20.0°C | Temperature to preserve heat |
+| `HUMIDITY_HIGH_THRESHOLD` | 70% | Humidity to trigger ventilation |
+| `HUMIDITY_LOW_THRESHOLD` | 50% | Low humidity threshold |
 | `LIGHT_LOW_THRESHOLD` | 1000 | ADC value indicating darkness |
 | `PUMP_PULSE_MS` | 500ms | Duration of pump burst |
 | `PUMP_COOLDOWN_MS` | 30000ms | Minimum time between pulses |

@@ -34,12 +34,12 @@ SOIL_DRY_THRESHOLD = 40000  # Above this = soil is dry, needs water
 WATER_LOW_THRESHOLD = 15000 # Below this = reservoir is empty
 
 # Temperature (Celsius)
-TEMP_HIGH_THRESHOLD = 23.0  # Above this = too hot, turn on fan
-TEMP_LOW_THRESHOLD = 18.0   # Below this = too cold, turn off fan to preserve heat
+TEMP_HIGH_THRESHOLD = 25.0  # Above this = too hot, turn on fan
+TEMP_LOW_THRESHOLD = 20.0   # Below this = too cold, turn off fan to preserve heat
 
 # Humidity (Percentage)
-HUMIDITY_HIGH_THRESHOLD = 80.0  # Above this = too humid, turn on fan
-HUMIDITY_LOW_THRESHOLD = 40.0   # Below this = too dry, turn on fan to circulate
+HUMIDITY_HIGH_THRESHOLD = 70.0  # Above this = too humid, turn on fan
+HUMIDITY_LOW_THRESHOLD = 50.0   # Below this = too dry, turn on fan to circulate
 
 # Light (Raw ADC values - higher = brighter)
 LIGHT_LOW_THRESHOLD = 1000  # Below this = too dark, turn on grow light
