@@ -352,7 +352,7 @@ void create_auto(lv_obj_t *parent) {
   
   // Air Quality System - trigger condition
   lv_obj_t *air_trigger = lv_label_create(parent);
-  lv_label_set_text(air_trigger, "Temp >23C or Humidity >80%/<40%");
+  lv_label_set_text(air_trigger, "Temp >25C or Humidity >70%/<50%");
   lv_obj_set_style_text_font(air_trigger, &lv_font_montserrat_10, 0);
   lv_obj_set_style_text_color(air_trigger, lv_color_hex(0x666666), 0);
   lv_obj_set_pos(air_trigger, 10, 136);
